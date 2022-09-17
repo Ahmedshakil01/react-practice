@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import './App.css';
+import UserForm from './components/UserForm';
 
 const URL = "https://rest-api-without-db.herokuapp.com/users";
 console.log(URL);
@@ -44,14 +45,34 @@ const  App = () => {
     })
     .catch((err)=>{
       setError(err.message);
-    })
+    });
 
+  }
+  const addUser = (user) =>{
+    fetch(URL, {
+      method : `POST`,
+      headers: {
+        "Content-Type" : "application/json"
+      },
+      body: JSON.stringify(user)
+    })
+    .then((res)=>{
+      if(res.status === 201){
+        getAllUsers();
+      }else{
+        throw new Error ("Could not created new user");
+      }
+    })
+    .catch((err)=>{
+      setError(err.message);
+    })
   }
   return (
     <div className="App">
       <h1>User Management App</h1>
       {isLoading && <h2>is Loading...</h2>}
       {error && <h2>{error}</h2>}
+      <UserForm btnText="Add User" handleSubmitData={addUser}/>
       <section>
       {users && users.map((user)=>{
           const {id, username, email} = user;
